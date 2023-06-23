@@ -262,16 +262,21 @@ class ClaiRepl(cmd.Cmd):
         save_history(self.sid, 'system', arg)
 
 
-@click.command()
-@click.argument('command', default='do', type=click.Choice(['do', 'hello']))
-def repl(command):
-    if command == 'do':
-        ClaiRepl().cmdloop()
-    elif command == 'hello':
-        print('hello world')
+@click.group(invoke_without_command=True)
+@click.pass_context
+def cli(ctx):
+    if ctx.invoked_subcommand is None:
+        ctx.invoke(repl)
 
+
+@click.command()
+def repl():
+    ClaiRepl().cmdloop()
+
+@click.command()
+@click.argument('prompt')
+def hello(prompt):
+    click.echo('Hello, ' + prompt)
 
 if __name__ == '__main__':
-    # ClaiRepl().cmdloop()
-    repl()
-
+    cli()
